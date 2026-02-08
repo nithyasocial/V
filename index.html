@@ -29,6 +29,8 @@
 
         img {
             width: 250px;
+            height: auto;
+            object-fit: contain;
             border-radius: 15px;
             margin-bottom: 20px;
         }
@@ -92,7 +94,8 @@
             <img id="mainGif" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJtZmxueWF6bm56bm56bm56bm56bm56bm56bm56bm56bm56bm56JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/qUIm5wu6LAAog/giphy.gif">
             <h1>ARJUNNN!</h1>
             <h1>Will you be my Valentine?👀</h1>
-            <p id="statusText"></p> <div class="buttons">
+            <p id="statusText"></p> 
+            <div class="buttons">
                 <button id="yesBtn">Yes!</button>
                 <button id="noBtn">No</button>
             </div>
@@ -104,12 +107,20 @@
         </div>
     </div>
 
+    <audio id="valentineMusic" loop preload="auto">
+        <source src="https://archive.org/download/andeeday/Ed%20Sheeran%20-%20Perfect%20%5BOfficial%20Audio%5D.mp3" type="audio/mpeg">
+    </audio>
+
     <script>
         const noBtn = document.getElementById('noBtn');
         const yesBtn = document.getElementById('yesBtn');
         const askState = document.getElementById('askState');
         const successState = document.getElementById('successState');
         const statusText = document.getElementById('statusText');
+        const music = document.getElementById('valentineMusic');
+
+        // This ensures the music is "ready" to go
+        music.load();
 
         let yesScale = 1;
         let attemptCount = 0;
@@ -119,32 +130,25 @@
             attemptCount++;
             
             if (attemptCount < finalTrapCount) {
-                // PHASE 1: DODGING
                 noBtn.style.position = 'absolute';
                 const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
                 const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
                 noBtn.style.left = `${x}px`;
                 noBtn.style.top = `${y}px`;
 
-                // SLOW BUT STEADY GROWTH
                 yesScale += 0.15; 
                 yesBtn.style.transform = `scale(${yesScale})`;
                 
-                // TEXT CHANGES (Optional humorous cues without a counter)
                 if(attemptCount === 5) statusText.innerText = "Ahh, seriosly??";
                 if(attemptCount === 15) statusText.innerText = "Bruhh comeonnn!";
                 if(attemptCount === 25) statusText.innerText = "Almost there😌";
 
             } else {
-                // PHASE 2: THE 30TH ATTEMPT TRAP
                 statusText.innerText = "Okay, I'm taking the wheel. Click 'Yes'.";
-                
                 const yesRect = yesBtn.getBoundingClientRect();
-                
                 noBtn.style.position = 'absolute';
                 noBtn.style.left = `${yesRect.left + (yesRect.width / 2) - (noBtn.offsetWidth / 2)}px`;
                 noBtn.style.top = `${yesRect.top + (yesRect.height / 2) - (noBtn.offsetHeight / 2)}px`;
-                
                 noBtn.style.transform = 'scale(0.1)';
                 noBtn.style.opacity = '0'; 
                 noBtn.style.pointerEvents = 'none'; 
@@ -155,6 +159,16 @@
             askState.classList.add('hidden');
             successState.classList.remove('hidden');
             noBtn.style.display = 'none';
+            
+            // FORCE PLAY
+            music.play().then(() => {
+                console.log("Music started!");
+            }).catch(e => {
+                console.log("Playback blocked. Trying one more time...");
+                // Sometimes browsers need a second click or a direct trigger
+                music.muted = false;
+                music.play();
+            });
         });
     </script>
 </body>
